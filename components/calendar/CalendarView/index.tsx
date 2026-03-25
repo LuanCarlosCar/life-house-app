@@ -5,11 +5,11 @@ import { useCalendar } from "@/hooks/useCalendar";
 import EventCard from "@/components/calendar/EventCard";
 import { cn } from "@/lib/utils";
 
-const DAY_HEADERS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const DAY_HEADERS = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
 
 const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
 ];
 
 function getMonthGrid(year: number, month: number): (number | null)[][] {
@@ -45,8 +45,8 @@ function isSameDay(a: Date, b: Date): boolean {
 }
 
 function formatMonthDay(month: number, day: number): string {
-  const m = MONTH_NAMES[month - 1]?.substring(0, 3).toUpperCase() ?? "";
-  return `${m} ${String(day).padStart(2, "0")}`;
+  const SHORT_MONTHS = ["JAN", "FEV", "MAR", "ABR", "MAI", "JUN", "JUL", "AGO", "SET", "OUT", "NOV", "DEZ"];
+  return `${SHORT_MONTHS[month - 1]} ${String(day).padStart(2, "0")}`;
 }
 
 export default function CalendarView() {
@@ -192,7 +192,7 @@ export default function CalendarView() {
       <div className="mt-6 px-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-bold uppercase tracking-wider text-white">
-            Today&apos;s Schedule
+            Agenda do dia
           </h3>
           <span className="rounded-md bg-[#F5C200] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black">
             {formatMonthDay(selectedDate.getMonth() + 1, selectedDate.getDate())}
@@ -223,7 +223,7 @@ export default function CalendarView() {
       {tomorrowEvents.length > 0 && (
         <div className="mt-6 px-4 pb-4">
           <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-[#555555]">
-            Tomorrow
+            Amanhã
           </h3>
           <div className="flex flex-col gap-2">
             {tomorrowEvents.map((event) => (

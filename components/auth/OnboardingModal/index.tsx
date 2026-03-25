@@ -5,6 +5,14 @@ import { createClient } from "@/lib/supabase/client";
 import { upsertMember } from "@/services/members/members.service";
 import type { Member } from "@/services/members/members.types";
 
+function formatPhone(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length === 0) return "";
+  if (digits.length <= 2) return `(${digits}`;
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
 interface OnboardingModalProps {
   userId: string;
   defaultName: string;
@@ -57,11 +65,6 @@ export default function OnboardingModal({
         className="relative w-full max-w-[420px] overflow-hidden rounded-2xl bg-[#1a1a1a]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Progress bar */}
-        <div className="h-1 w-full bg-[#2a2a2a]">
-          <div className="h-full w-1/2 bg-[#F5C200]" />
-        </div>
-
         <div className="p-6">
           {/* Lightning icon */}
           <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-[#F5C200]">
@@ -107,7 +110,7 @@ export default function OnboardingModal({
                 type="tel"
                 value={phone}
                 onChange={(e) => {
-                  setPhone(e.target.value);
+                  setPhone(formatPhone(e.target.value));
                   setErrors((prev) => ({ ...prev, phone: undefined }));
                 }}
                 placeholder="(00) 00000-0000"
@@ -140,16 +143,6 @@ export default function OnboardingModal({
             </button>
           </div>
 
-          {/* Step indicator */}
-          <div className="mt-6 flex items-center justify-between">
-            <span className="text-[10px] uppercase tracking-widest text-[#555555]">
-              Step 01 of 02
-            </span>
-            <div className="flex gap-1.5">
-              <div className="h-1 w-6 rounded-full bg-[#F5C200]" />
-              <div className="h-1 w-6 rounded-full bg-[#2a2a2a]" />
-            </div>
-          </div>
         </div>
       </div>
     </div>

@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { useAtom, useAtomValue } from "jotai";
+import { useEffect, useMemo } from "react";
+import { useAtom } from "jotai";
 import { createClient } from "@/lib/supabase/client";
 import { getEventsByMonth } from "@/services/events/events.service";
-import { eventsAtom, calendarLoadingAtom, calendarErrorAtom } from "@/stores/calendar";
+import { eventsCacheAtom, calendarLoadingAtom, calendarErrorAtom } from "@/stores/calendar";
 import type { Event } from "@/services/events/events.types";
 
 interface UseCalendarReturn {
@@ -14,26 +14,26 @@ interface UseCalendarReturn {
 }
 
 export function useCalendar(year: number, month: number): UseCalendarReturn {
-  const [events, setEvents] = useAtom(eventsAtom);
+  const [cache, setCache] = useAtom(eventsCacheAtom);
   const [loading, setLoading] = useAtom(calendarLoadingAtom);
   const [error, setError] = useAtom(calendarErrorAtom);
-  const lastKeyRef = useRef("");
+
+  const key = `${year}-${month}`;
 
   useEffect(() => {
-    const key = `${year}-${month}`;
-    if (lastKeyRef.current === key) return;
-    lastKeyRef.current = key;
+    if (cache[key]) return;
 
     setLoading(true);
 
     const supabase = createClient();
     getEventsByMonth(supabase, year, month).then(({ data, error: err }) => {
-      if (lastKeyRef.current !== key) return;
-      setEvents(data ?? []);
+      setCache((prev) => ({ ...prev, [key]: data ?? [] }));
       setError(err);
       setLoading(false);
     });
-  }, [year, month, setEvents, setLoading, setError]);
+  }, [key, cache, setCache, setLoading, setError, year, month]);
 
-  return { events, loading, error };
+  const events = useMemo(() => cache[key] ?? [], [cache, key]);
+
+  return { events, loading: !cache[key] && loading, error };
 }

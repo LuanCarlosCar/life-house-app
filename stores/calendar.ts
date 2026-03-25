@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 import type { Event } from "@/services/events/events.types";
 
-export const eventsAtom = atom<Event[]>([]);
-export const calendarLoadingAtom = atom(true);
+export const eventsCacheAtom = atom<Record<string, Event[]>>({});
+export const calendarLoadingAtom = atom(false);
 export const calendarErrorAtom = atom<unknown>(null);
